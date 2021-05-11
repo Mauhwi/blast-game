@@ -1,9 +1,8 @@
-import Blue from './blue.png';
-import Green from './green.png';
-import Purple from './purple.png';
-import Red from './red.png';
-import Yellow from './yellow.png';
-
+import Blue from "./blue.png";
+import Green from "./green.png";
+import Purple from "./purple.png";
+import Red from "./red.png";
+import Yellow from "./yellow.png";
 
 let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
@@ -28,11 +27,11 @@ let itemsToDestroy = 30;
 let blue = new Image();
 blue.src = Blue;
 let green = new Image();
-green.src = Green
+green.src = Green;
 let purple = new Image();
-purple.src = Purple
+purple.src = Purple;
 let red = new Image();
-red.src = Red
+red.src = Red;
 let yellow = new Image();
 yellow.src = Yellow;
 let fillColors = [blue, green, purple, red, yellow];
@@ -42,6 +41,7 @@ fillColors = fillColors.slice(0, c);
 
 var rects = [];
 
+let playfield = document.querySelector(".playField");
 let pointsField = document.querySelector(".points-counter");
 let movesField = document.querySelector(".moves-counter");
 pointsField.innerHTML = itemsToDestroy;
@@ -56,6 +56,8 @@ class fieldItem {
     this.fillColor = fillColor;
     this.row = row;
     this.col = col;
+    this.pY = this.y;
+    this.animationStep = (this.y - this.pY) / 10;
   }
 
   draw() {
@@ -73,6 +75,14 @@ class fieldItem {
     context.clearRect(this.x, this.y, this.width, this.height);
   }
 
+  getPosition() {
+    return [this.pY, this.y];
+  }
+
+  setPosition(y) {
+    this.pY = y;
+  }
+
   getRow() {
     return this.row;
   }
@@ -80,12 +90,13 @@ class fieldItem {
   moveDown() {
     this.row = this.row + 1;
     this.y = this.y + itemSize;
-    this.update();
+    this.animationStep = (this.y - this.pY) / 10;
   }
 
   moveUp() {
     this.row = this.row - 1;
     this.y = this.y - itemSize;
+    this.pY = this.y;
     context.clearRect(this.x, this.y, this.width, this.height);
   }
 
@@ -108,11 +119,30 @@ class fieldItem {
 
   setColor(color) {
     this.fillColor = color;
-    this.update();
+    this.draw();
   }
 
   update() {
-    this.draw();
+    if (this.pY >= this.y) {
+      context.clearRect(this.x, this.y, this.width, this.height);
+      context.drawImage(
+        fillColors[this.fillColor],
+        this.x,
+        this.y,
+        this.height,
+        this.width
+      );
+    } else {
+      context.clearRect(this.x, this.pY, this.width, this.height);
+      this.pY += this.animationStep;
+      context.drawImage(
+        fillColors[this.fillColor],
+        this.x,
+        this.pY,
+        this.height,
+        this.width
+      );
+    }
   }
 }
 
@@ -210,6 +240,25 @@ function floatingItemsCheck() {
   return floatingItems;
 }
 
+let frame = 0;
+function animateItemsFall() {
+  for (let itemFalling = rects.length - 1; itemFalling >= 0; itemFalling--) {
+    let position = rects[itemFalling].getPosition();
+    if (position[0] < position[1]) {
+      rects[itemFalling].update();
+    }
+  }
+  frame++;
+  if (frame <= 10) {
+    requestAnimationFrame(animateItemsFall);
+  } else {
+    frame = 0;
+    //репопуляция поля
+    populateEmptyItems();
+    playfield.classList.toggle("disabled");
+  }
+}
+
 //перемещение элементов после удаления
 function itemFall() {
   let floatingItems = floatingItemsCheck();
@@ -242,6 +291,9 @@ function itemFall() {
     }
     floatingItems = floatingItemsCheck();
   }
+  // console.log(rects)
+  playfield.classList.toggle("disabled");
+  requestAnimationFrame(animateItemsFall);
 }
 
 //репопуляция поля
@@ -250,7 +302,7 @@ function populateEmptyItems() {
     if (emptyItem.getColor() == null) {
       setTimeout(
         emptyItem.setColor.bind(emptyItem),
-        600,
+        200,
         getRndInteger(0, fillColors.length - 1)
       );
     }
@@ -288,9 +340,6 @@ canvas.addEventListener("click", (event) => {
 
       //перемещение элементов после удаления
       itemFall();
-
-      //репопуляция поля
-      populateEmptyItems();
     }
   }
 });
