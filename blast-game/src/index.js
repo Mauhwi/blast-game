@@ -12,8 +12,8 @@ let playFieldHeight = 400;
 canvas.width = playFieldWidth;
 canvas.height = playFieldHeight;
 
-let cols = 5;
-let rows = 5;
+let cols = 8;
+let rows = 8;
 let k = 2;
 let c = 4;
 
@@ -41,9 +41,9 @@ fillColors = fillColors.slice(0, c);
 
 var rects = [];
 
-let playfield = document.querySelector(".playField");
-let pointsField = document.querySelector(".points-counter");
-let movesField = document.querySelector(".moves-counter");
+let playfield = document.querySelector('.playField')
+let pointsField = document.querySelector('.points-counter')
+let movesField = document.querySelector('.moves-counter')
 pointsField.innerHTML = itemsToDestroy;
 movesField.innerHTML = movesToWin;
 
@@ -56,131 +56,119 @@ class fieldItem {
     this.fillColor = fillColor;
     this.row = row;
     this.col = col;
-    this.pY = this.y;
-    this.animationStep = (this.y - this.pY) / 10;
+    this.pY = this.y
+    this.pX = this.x
+    this.animationStep = (this.y-this.pY)/10;
   }
 
   draw() {
-    context.drawImage(
-      fillColors[this.fillColor],
-      this.x,
-      this.y,
-      this.height,
-      this.width
-    );
-  }
+    context.drawImage(fillColors[this.fillColor], this.x, this.y, this.height, this.width);
+  };
 
   delete() {
-    this.fillColor = null;
+    this.fillColor = null
+    this.width = itemSize
+    this.height = itemSize
+    this.pX = this.x
+    this.pY = this.y
     context.clearRect(this.x, this.y, this.width, this.height);
   }
 
+  compress() {
+    if (this.height>0) {
+      context.clearRect(this.x, this.y, itemSize, itemSize);
+      this.height -= itemSize/10
+      this.width -= itemSize/10
+      this.pX += (itemSize/2)/10
+      this.pY += (itemSize/2)/10
+      context.drawImage(fillColors[this.fillColor], this.pX, this.pY, this.height, this.width);
+    } else {
+      context.clearRect(this.x, this.y, this.width, this.height);
+    }
+  }
+
   getPosition() {
-    return [this.pY, this.y];
+    return [this.pY, this.y]
   }
 
   setPosition(y) {
-    this.pY = y;
+    this.pY = y
   }
 
   getRow() {
-    return this.row;
+    return this.row
   }
 
   moveDown() {
-    this.row = this.row + 1;
-    this.y = this.y + itemSize;
-    this.animationStep = (this.y - this.pY) / 10;
+    this.row = this.row+1
+    this.y = this.y + itemSize
+    this.animationStep = (this.y-this.pY)/10;
   }
 
   moveUp() {
-    this.row = this.row - 1;
-    this.y = this.y - itemSize;
-    this.pY = this.y;
+    this.row = this.row-1
+    this.y = this.y - itemSize
+    this.pY = this.y
     context.clearRect(this.x, this.y, this.width, this.height);
   }
 
   getCol() {
-    return this.col;
+    return this.col
   }
 
   getColor() {
-    return this.fillColor;
+    return this.fillColor
   }
 
   itemClick(eventX, eventY) {
-    return (
-      eventX > this.x &&
-      eventX < this.x + itemSize &&
-      eventY > this.y &&
-      eventY < this.y + itemSize
-    );
+      return (eventX > this.x && eventX < this.x+itemSize && eventY > this.y && eventY < this.y+itemSize)
   }
 
   setColor(color) {
     this.fillColor = color;
     this.draw();
   }
-
+  
   update() {
-    if (this.pY >= this.y) {
+    if (this.pY>=this.y) {
       context.clearRect(this.x, this.y, this.width, this.height);
-      context.drawImage(
-        fillColors[this.fillColor],
-        this.x,
-        this.y,
-        this.height,
-        this.width
-      );
+      context.drawImage(fillColors[this.fillColor], this.x, this.y, this.height, this.width);
     } else {
       context.clearRect(this.x, this.pY, this.width, this.height);
-      this.pY += this.animationStep;
-      context.drawImage(
-        fillColors[this.fillColor],
-        this.x,
-        this.pY,
-        this.height,
-        this.width
-      );
+      this.pY += this.animationStep
+      context.drawImage(fillColors[this.fillColor], this.x, this.pY, this.height, this.width);
     }
+    
   }
 }
 
 function initPlayField() {
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      let rect = new fieldItem(
-        i * itemSize,
-        j * itemSize,
-        itemSize,
-        itemSize,
-        getRndInteger(0, fillColors.length - 1),
-        j,
-        i
-      );
-      rects.push(rect);
+      let rect = new fieldItem(i * itemSize, j * itemSize, itemSize, itemSize, getRndInteger(0, fillColors.length - 1), j, i);
+      rects.push(rect);     
     }
   }
   if (checkArray(rects)) {
     for (let r of rects) {
-      r.draw();
+      r.draw(); 
     }
   } else {
     rects = [];
     initPlayField();
-    console.log("restructure");
-  }
-  console.log(rects);
+    console.log('restructure')
+  } 
+  console.log(rects) 
 }
 
-yellow.onload = initPlayField;
+yellow.onload = initPlayField
 function checkArray(rects) {
   for (let r of rects) {
-    if (checkItem(r).length >= k) {
-      return true;
+    if (checkItem(r).length>=k) {
+      return true
     }
   }
-  return false;
+  return false
 }
 
 //рандом для выбора цвета
@@ -190,51 +178,43 @@ function getRndInteger(min, max) {
 
 //проверка поля на наличие комбинаций относительно элемента
 function checkItem(r) {
-  let visited = [];
-  let sameColorItems = [];
-  let queue = [];
-
+  let visited = []
+  let sameColorItems = []
+  let queue = []
+  
   queue.push(r);
   visited.push(r);
   sameColorItems.push(r);
 
-  while (queue.length > 0) {
+  while(queue.length > 0) {
     //проверяем первый элемент в очереди
-    let v = queue.shift();
+    let v = queue.shift()
     //находим соседние для него не посещенные элементы
     for (let item of rects) {
       if (!visited.includes(item)) {
-        if (
-          (Math.abs(item.getCol() - v.getCol()) == 1 &&
-            item.getRow() == v.getRow()) ||
-          (Math.abs(item.getRow() - v.getRow()) == 1 &&
-            item.getCol() == v.getCol())
-        ) {
+        if ( Math.abs(item.getCol()-v.getCol()) == 1 && item.getRow() == v.getRow() 
+        || ( Math.abs(item.getRow()-v.getRow()) == 1 && item.getCol() == v.getCol() )) {
           //добавляем их в список посещенных
-          visited.push(item);
-          //находим среди них элементы такого же цвета добавляем их в соответствующий список и в очередь для обработки
-          if (item.getColor() == v.getColor()) {
-            sameColorItems.push(item);
-            queue.push(item);
-          }
-        }
+          visited.push(item)
+          //находим среди них элементы такого же цвета добавляем их в соответствующий список и в очередь для обработки 
+          if (item.getColor()==v.getColor()) {
+            sameColorItems.push(item)
+            queue.push(item)                  
+          } 
+        } 
       }
-    }
+    }         
   }
   return sameColorItems;
 }
 
 //проверка на "висящие" элементы
 function floatingItemsCheck() {
-  let floatingItems = [];
-  for (let floatingItem = 0; floatingItem < rects.length - 1; floatingItem++) {
-    if (
-      rects[floatingItem].getColor() != null &&
-      rects[floatingItem + 1].getColor() == null &&
-      rects[floatingItem + 1].getCol() == rects[floatingItem].getCol() &&
-      floatingItem + 1 <= rects.length - 1
-    ) {
-      floatingItems.push(rects[floatingItem]);
+  let floatingItems = []
+  for (let floatingItem=0; floatingItem<rects.length-1; floatingItem++) {
+    if (rects[floatingItem].getColor() != null && rects[floatingItem+1].getColor() == null 
+    && rects[floatingItem+1].getCol() == rects[floatingItem].getCol() && (floatingItem+1)<=(rects.length-1)) {
+      floatingItems.push(rects[floatingItem])
     }
   }
   return floatingItems;
@@ -242,82 +222,89 @@ function floatingItemsCheck() {
 
 let frame = 0;
 function animateItemsFall() {
-  for (let itemFalling = rects.length - 1; itemFalling >= 0; itemFalling--) {
-    let position = rects[itemFalling].getPosition();
-    if (position[0] < position[1]) {
-      rects[itemFalling].update();
-    }
+  for (let itemFalling=rects.length-1; itemFalling>=0; itemFalling--) {
+    let position = rects[itemFalling].getPosition()
+    if (position[0]<position[1]) {
+      rects[itemFalling].update()              
+    }            
   }
-  frame++;
-  if (frame <= 10) {
-    requestAnimationFrame(animateItemsFall);
+  frame++
+  if (frame<=10) {
+    requestAnimationFrame(animateItemsFall)
   } else {
-    frame = 0;
+    frame=0;
     //репопуляция поля
-    populateEmptyItems();
-    playfield.classList.toggle("disabled");
+    populateEmptyItems(); 
+    playfield.classList.toggle('disabled')
+  }          
+}
+
+let sameColorItems = []
+function animateDeletion() {
+  for (let itemDeleted=sameColorItems.length-1; itemDeleted>=0; itemDeleted--) {
+    let color = sameColorItems[itemDeleted].getColor()
+    if (color!=undefined) {
+      sameColorItems[itemDeleted].compress()              
+    }            
   }
+  frame++
+  if (frame<=10) {
+    requestAnimationFrame(animateDeletion)
+  } else {
+    frame=0;
+    for (let itemDeleted=sameColorItems.length-1; itemDeleted>=0; itemDeleted--) {
+      sameColorItems[itemDeleted].delete()                               
+    }
+    sameColorItems = []
+  } 
+          
 }
 
 //перемещение элементов после удаления
 function itemFall() {
-  let floatingItems = floatingItemsCheck();
-  while (floatingItems.length > 0) {
-    for (let t = 0; t < rects.length - 1; t++) {
-      if (
-        rects[t].getColor() != null &&
-        rects[t + 1].getColor() == null &&
-        rects[t + 1].getCol() == rects[t].getCol() &&
-        t + 1 <= rects.length - 1
-      ) {
+  let floatingItems = floatingItemsCheck()
+  while (floatingItems.length>0) {
+    for (let t=0; t<rects.length-1; t++) {
+      if (rects[t].getColor() != null && rects[t+1].getColor() == null && rects[t+1].getCol() == rects[t].getCol() && (t+1)<=(rects.length-1)) {
         let x = 1;
-        floatingItems.pop();
+        floatingItems.pop()
         //помашоговое перемещение элемента на одну позицию вниз если она пустая
-        while (
-          t + x <= rects.length - 1 &&
-          rects[t + x].getColor() == null &&
-          rects[t + x].getCol() == rects[t].getCol()
-        ) {
-          rects[t].moveDown();
-          rects[t + x].moveUp();
-          x += 1;
+        while ((t+x)<=(rects.length-1) && rects[t+x].getColor() == null && rects[t+x].getCol() == rects[t].getCol()) {
+          rects[t].moveDown()
+          rects[t+x].moveUp()
+          x+=1
         }
         //сортировка обработанных элементов в массиве по строке
-        let tempArray = rects.slice(t, t + x).sort((a, b) => {
-          return a.getRow() - b.getRow();
-        });
-        rects.splice(t, x, ...tempArray);
+        let tempArray = rects.slice(t, t+x)
+        .sort((a, b) => {return a.getRow() - b.getRow();})           
+        rects.splice(t, x, ...tempArray)            
       }
     }
-    floatingItems = floatingItemsCheck();
+    floatingItems = floatingItemsCheck()
   }
   // console.log(rects)
-  playfield.classList.toggle("disabled");
-  requestAnimationFrame(animateItemsFall);
+  playfield.classList.toggle('disabled');
+  requestAnimationFrame(animateItemsFall)
 }
 
 //репопуляция поля
 function populateEmptyItems() {
   for (let emptyItem of rects) {
     if (emptyItem.getColor() == null) {
-      setTimeout(
-        emptyItem.setColor.bind(emptyItem),
-        200,
-        getRndInteger(0, fillColors.length - 1)
-      );
+      setTimeout(emptyItem.setColor.bind(emptyItem), 300, (getRndInteger(0, fillColors.length - 1)))  
     }
   }
 }
 
 //обновление поля info
-function infoUpdate(sameColorItems) {
-  itemsToDestroy = itemsToDestroy - sameColorItems.length;
+function infoUpdate() {
+  itemsToDestroy=itemsToDestroy-sameColorItems.length
   movesToWin--;
-  if (itemsToDestroy < 0) {
+  if (itemsToDestroy<0) {
     pointsField.innerHTML = 0;
   } else {
-    pointsField.innerHTML = itemsToDestroy;
-  }
+    pointsField.innerHTML = itemsToDestroy  
+  }  
   movesField.innerHTML = movesToWin;
 }
 
@@ -326,20 +313,21 @@ canvas.addEventListener("click", (event) => {
   const x = event.clientX;
   const y = event.clientY;
   for (let r of rects) {
-    let state = r.itemClick(x, y);
-    if (state) {
-      let sameColorItems = checkItem(r);
+    let state = r.itemClick(x,y);
+    if (state) {           
+      sameColorItems = checkItem(r);
       if (sameColorItems.length >= k) {
         for (let i of sameColorItems) {
           //удалить с canvas
-          i.delete();
+          // i.delete();
         }
+        requestAnimationFrame(animateDeletion)
         //обновление поля info
-        infoUpdate(sameColorItems);
+        infoUpdate()
       }
-
-      //перемещение элементов после удаления
-      itemFall();
+      // //перемещение элементов после удаления
+      setTimeout(itemFall, 800)
+      // itemFall();            
     }
-  }
+  }     
 });
