@@ -7,8 +7,13 @@
 /coverage
 
 # production
-/dist
-
+/dist/main.js.LICENSE.txt
+/dist/main.js
+/dist/9bc0e917cc710a6c87d7.png
+/dist/47ca1586f508532181a3.png
+/dist/956af920213bfe210baf.png
+/dist/337424e08cec69a7a3ec.png
+/dist/fef5ea20079ea3b6164e.png
 # misc
 .DS_Store
 .env.local

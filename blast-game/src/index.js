@@ -7,8 +7,8 @@ import Yellow from "./yellow.png";
 let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
 
-let playFieldWidth = 400;
-let playFieldHeight = 400;
+let playFieldWidth = 500;
+let playFieldHeight = 500;
 canvas.width = playFieldWidth;
 canvas.height = playFieldHeight;
 
@@ -20,8 +20,10 @@ let c = 4;
 let itemSize = playFieldHeight / rows;
 
 //условия
-let movesToWin = 10;
-let itemsToDestroy = 30;
+let movesToWin = 16;
+let itemsToDestroy = 50;
+let itemsToWin = 50;
+let points = 0;
 
 //цвета
 let blue = new Image();
@@ -44,7 +46,8 @@ var rects = [];
 let playfield = document.querySelector('.playField')
 let pointsField = document.querySelector('.points-counter')
 let movesField = document.querySelector('.moves-counter')
-pointsField.innerHTML = itemsToDestroy;
+let progressBar = document.querySelector('.progress-bar')
+pointsField.innerHTML = points;
 movesField.innerHTML = movesToWin;
 
 class fieldItem {
@@ -75,7 +78,7 @@ class fieldItem {
   }
 
   compress() {
-    if (this.height>0) {
+    if (this.height>0+1) {
       context.clearRect(this.x, this.y, itemSize, itemSize);
       this.height -= itemSize/10
       this.width -= itemSize/10
@@ -83,16 +86,14 @@ class fieldItem {
       this.pY += (itemSize/2)/10
       context.drawImage(fillColors[this.fillColor], this.pX, this.pY, this.height, this.width);
     } else {
+      // this.height = itemSize
+      // this.width = itemSize
       context.clearRect(this.x, this.y, this.width, this.height);
     }
   }
 
   getPosition() {
     return [this.pY, this.y]
-  }
-
-  setPosition(y) {
-    this.pY = y
   }
 
   getRow() {
@@ -130,7 +131,7 @@ class fieldItem {
   }
   
   update() {
-    if (this.pY>=this.y) {
+    if (this.pY>=this.y+1) {
       context.clearRect(this.x, this.y, this.width, this.height);
       context.drawImage(fillColors[this.fillColor], this.x, this.y, this.height, this.width);
     } else {
@@ -296,30 +297,70 @@ function populateEmptyItems() {
   }
 }
 
-//обновление поля info
+//бонусные очки за разрушение больше k элементов и за элементы разрушенные после достижения цели
+function pointsCalc(sameColorItems) {
+  let points = 0;
+  if (itemsToDestroy <=0) {
+    points += (sameColorItems-k)*30;
+  } else {
+    points = k * 10;
+    if (sameColorItems > k) {
+      points += (sameColorItems-k)*20;
+    }
+  }
+  return points;
+}
+
+//обновление информации об игре
 function infoUpdate() {
   itemsToDestroy=itemsToDestroy-sameColorItems.length
   movesToWin--;
-  if (itemsToDestroy<0) {
+  points+=pointsCalc(sameColorItems.length)  
+  let progress = ((itemsToWin - itemsToDestroy)*100)/itemsToWin
+
+  if (itemsToDestroy<=0) {
     pointsField.innerHTML = 0;
+    pointsField.innerHTML = points 
+    progressBar.style.width = 100 + "%"; 
   } else {
-    pointsField.innerHTML = itemsToDestroy  
+    pointsField.innerHTML = points
+    progressBar.style.width = 100 + "%"; 
+    progressBar.style.width = progress + "%";
   }  
   movesField.innerHTML = movesToWin;
 }
 
+//функция для вычесления координатов клика относительно canvas
+function relMouseCoords(event){
+  var totalOffsetX = 0;
+  var totalOffsetY = 0;
+  var canvasX = 0;
+  var canvasY = 0;
+  var currentElement = canvas;
+
+  do{
+      totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+      totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+  }
+  while(currentElement = currentElement.offsetParent)
+
+  canvasX = event.pageX - totalOffsetX;
+  canvasY = event.pageY - totalOffsetY;
+
+  return [canvasX, canvasY]
+}
+
 //обработка клика на элемент
 canvas.addEventListener("click", (event) => {
-  const x = event.clientX;
-  const y = event.clientY;
+  let coordinates = relMouseCoords(event)
+  const x = coordinates[0];
+  const y =coordinates[1];
   for (let r of rects) {
     let state = r.itemClick(x,y);
     if (state) {           
       sameColorItems = checkItem(r);
       if (sameColorItems.length >= k) {
         for (let i of sameColorItems) {
-          //удалить с canvas
-          // i.delete();
         }
         requestAnimationFrame(animateDeletion)
         //обновление поля info
@@ -329,5 +370,8 @@ canvas.addEventListener("click", (event) => {
       setTimeout(itemFall, 800)
       // itemFall();            
     }
+  }
+  if (movesToWin==0) {
+    playfield.classList.add('disabled')
   }     
 });
