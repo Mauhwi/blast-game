@@ -7,247 +7,12 @@
       content="width=device-width, initial-scale=1.0"
     />
     <title>Blast Game</title>
-
-    <style>
-      body {
-        min-width: 900px;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        font-family: marvin, sans-serif;
-        color: white;
-        background-color: #5d92a3;
-      }
-
-      .upper-menu {
-        display: flex;
-        justify-content: center;
-        min-height: 100px;
-        height: 10vh;
-      }
-
-      .upper-menu .money2,
-      .upper-menu .money {
-        margin-left: 30px;
-        margin-top: 20px;
-        align-self: flex-start;
-        min-height: 38px;
-      }
-
-      .upper-menu .money2 img,
-      .upper-menu .money img {
-        max-height: 40px;
-        width: auto;
-        height: 40%;
-      }
-      .progress-bar-wrapper {
-        width: 90%;
-        height: 26px;
-        background: rgb(0, 16, 36);
-        background: linear-gradient(
-          180deg,
-          rgba(0, 16, 36, 1) 0%,
-          rgba(3, 37, 84, 1) 100%
-        );
-        border-radius: 30px;
-      }
-
-      .progress-bar {
-        box-sizing: border-box;
-        border-radius: 24px;
-        width: 5%;
-        height: 26px;
-        border: 1px solid #0d233d;
-        background: rgba(42, 163, 0);
-        background: linear-gradient(
-          180deg,
-          rgba(224, 255, 159, 1) 0%,
-          rgba(117, 223, 0, 1) 22%,
-          rgba(42, 163, 0, 1) 48%,
-          rgba(42, 163, 0, 1) 64%,
-          rgba(77, 229, 0, 1) 100%
-        );
-        align-self: flex-start;
-      }
-
-      .upper-menu .progress {
-        margin-left: 30px;
-        background: rgb(10, 38, 75);
-        background: linear-gradient(
-          180deg,
-          rgba(10, 38, 75, 1) 0%,
-          rgba(14, 54, 110, 1) 91%
-        );
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 400px;
-        height: 76px;
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
-      }
-      .upper-menu .progress .progress-text {
-        padding-bottom: 4px;
-        margin: 0;
-        text-transform: uppercase;
-        font-weight: bold;
-        font-size: 1.1rem;
-      }
-
-      .upper-menu .pause-button {
-        margin-left: 30px;
-        margin-top: 14px;
-        align-self: flex-start;
-        height: 60%;
-        min-width: 100px;
-        min-height: 40px;
-        max-height: 60px;
-      }
-
-      .upper-menu .pause-button img {
-        max-width: auto;
-        height: 100%;
-      }
-
-      .game {
-        align-content: center;
-        justify-content: center;
-        display: flex;
-      }
-
-      .playField {
-        margin: 10px;
-        border-radius: 16px;
-        background-color: #0d233d;
-        box-shadow: inset 0px 0px 4px 2px #173e79, 0px 0px 2px 1px #1a468c,
-          0px 0px 4px 6px #5d92a3, 0px 0px 3px 6px #5d92a3,
-          0px 0px 1px 8px #aee6ee;
-      }
-      .disabled {
-        pointer-events: none;
-      }
-      canvas {
-        padding: 8px;
-        margin: 2px;
-        border-radius: 10px;
-        background-color: #0d233d;
-      }
-
-      .info {
-        margin-left: 40px;
-      }
-
-      .lower-info-wrapper {
-        width: 260px;
-        height: 260px;
-        border-radius: 20px;
-        box-shadow: 0px 0px 4px 4px #5d92a3, 0px 0px 1px 8px #82ffff;
-      }
-
-      .lower-info {
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        width: 260px;
-        height: 260px;
-        border-radius: 20px;
-        background-color: #20549a;
-        box-shadow: inset 0px 0px 3px 2px #2185ff, 0px 0px 6px 2px #2d5b6b;
-      }
-
-      .moves-counter-wrapper {
-        position: relative;
-        align-self: center;
-        width: 170px;
-        height: 170px;
-      }
-
-      .moves-counter-wrapper img {
-        height: 100%;
-        width: auto;
-      }
-
-      .moves-counter {
-        font-size: 2rem;
-        padding: 0;
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        right: 50%;
-        transform: translate(50%, -50%);
-      }
-
-      .points-counter-wrapper {
-        height: 30%;
-        width: 80%;
-        align-self: center;
-        text-align: center;
-        background: rgb(8, 29, 57);
-        border-radius: 20px;
-        background: linear-gradient(
-          180deg,
-          rgba(8, 29, 57, 1) 0%,
-          rgba(15, 58, 118, 1) 91%
-        );
-      }
-
-      .points-counter-wrapper p {
-        text-transform: uppercase;
-        margin: 0;
-      }
-
-      .points-text {
-        font-size: 1.5rem;
-      }
-
-      .points-counter {
-        font-size: 2rem;
-      }
-
-      .upper-info-wrapper {
-        display: flex;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
-        width: 183px;
-        height: 43px;
-        background: rgb(168, 205, 255);
-        background: linear-gradient(
-          180deg,
-          rgba(168, 205, 255, 1) 0%,
-          rgba(47, 83, 129, 1) 100%
-        );
-        margin: auto;
-        margin-bottom: 6px;
-      }
-
-      .upper-info {
-        align-self: flex-end;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
-        border: 3px transparent;
-        background: rgb(69, 212, 252);
-        background: linear-gradient(
-          180deg,
-          rgba(69, 212, 252, 1) 0%,
-          rgba(34, 88, 161, 1) 37%,
-          rgba(15, 57, 113, 1) 100%
-        );
-        text-align: center;
-        width: 180px;
-        height: 40px;
-        margin: auto;
-      }
-      .upper-info p {
-        margin-top: 10px;
-      }
-    </style>
   </head>
   <body>
+    <span>Спасибо за интересное задание</span>
     <div class="upper-menu">
       <div class="money2">
-        <img src="./images/money2.png" />
+        <img src="./images/money2.png">
       </div>
       <div class="progress">
         <p class="progress-text">Прогресс</p>
@@ -256,10 +21,10 @@
         </div>
       </div>
       <div class="money">
-        <img src="./images/money.png" />
+        <img src="./images/money.png">
       </div>
       <div class="pause-button">
-        <img src="./images/pause.png" />
+        <img src="./images/pause.png">
       </div>
     </div>
 
@@ -269,17 +34,17 @@
           Your browser does not support the canvas element.
         </canvas>
       </div>
-
+  
       <div class="info">
         <div class="upper-info-wrapper">
-          <div class="upper-info">
-            <p>Ходы:</p>
-          </div>
+            <div class="upper-info">
+              <p>Ходы:</p>
+        </div>
         </div>
         <div class="lower-info-wrapper">
           <div class="lower-info">
             <div class="moves-counter-wrapper">
-              <img src="./images/moves.png" />
+              <img src="./images/moves.png">
               <p class="moves-counter"></p>
             </div>
             <div class="points-counter-wrapper">
@@ -288,7 +53,14 @@
             </div>
           </div>
         </div>
+
+        <div class="status-info-wrapper">
+          <div class="status-info">
+              <p class="status-text">...</p>
+          </div>
+        </div>
       </div>
+    </div>
     </div>
     <script src="main.js"></script>
   </body>
