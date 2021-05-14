@@ -3,13 +3,13 @@ import Green from "./green.png";
 import Purple from "./purple.png";
 import Red from "./red.png";
 import Yellow from "./yellow.png";
-import './style.css';
+import "./style.css";
 
 let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
 
-let cols = 2;
-let rows = 2;
+let cols = 8;
+let rows = 8;
 let k = 2;
 let c = 5;
 
@@ -22,7 +22,6 @@ canvas.height = playFieldHeight;
 //условия
 let pointsToWin = 320;
 let movesToWin = 6;
-let itemsToDestroy = 20;
 let points = 0;
 let s = 0;
 
@@ -39,17 +38,19 @@ let yellow = new Image();
 yellow.src = Yellow;
 let fillColors = [blue, green, purple, red, yellow];
 
-//с = необходимое количество цветов (4)
+//с = необходимое количество цветов (5)
 fillColors = fillColors.slice(0, c);
 
 var rects = [];
 
+let shuffleBooster = document.querySelector(".shuffle-booster");
 let playfield = document.querySelector(".playField");
 let pointsField = document.querySelector(".points-counter");
 let movesField = document.querySelector(".moves-counter");
 let progressBar = document.querySelector(".progress-bar");
 let statusText = document.querySelector(".status-text");
 let statusInfoWrapper = document.querySelector(".status-info-wrapper");
+// let gameScreen = document.querySelector(".game");
 pointsField.innerHTML = points;
 movesField.innerHTML = movesToWin;
 
@@ -307,12 +308,13 @@ function animateItemsFall() {
     populateEmptyItems();
     if (movesToWin !== 0) {
       playfield.classList.remove("disabled");
+      shuffleBooster.classList.remove("disabled");
     } else {
       if (points >= pointsToWin) {
         statusText.innerHTML = "Победа!";
         statusInfoWrapper.classList.add("good-glow");
       } else {
-        statusText.innerHTML = "Поражение(";
+        statusText.innerHTML = "Поражение";
         statusInfoWrapper.classList.add("bad-glow");
       }
     }
@@ -350,6 +352,7 @@ function animateDeletion() {
 
 //перемещение элементов после удаления
 function itemFall() {
+  playfield.classList.add("disabled");
   let floatingItems = floatingItemsCheck();
   while (floatingItems.length > 0) {
     for (let t = 0; t < rects.length - 1; t++) {
@@ -380,7 +383,6 @@ function itemFall() {
     }
     floatingItems = floatingItemsCheck();
   }
-  playfield.classList.add("disabled");
   requestAnimationFrame(animateItemsFall);
 }
 
@@ -390,7 +392,7 @@ function populateEmptyItems() {
     if (emptyItem.getColor() == null) {
       setTimeout(
         emptyItem.setColor.bind(emptyItem),
-        300,
+        200,
         getRndInteger(0, fillColors.length - 1)
       );
     }
@@ -410,8 +412,8 @@ function populateEmptyItems() {
 //бонусные очки за разрушение больше k элементов и за элементы разрушенные после достижения цели
 function pointsCalc(sameColorItems) {
   let calculatedPoints = 0;
-  if (itemsToDestroy <= 0) {
-    calculatedPoints += (sameColorItems - k) * 30;
+  if (points > pointsToWin) {
+    calculatedPoints += sameColorItems * 30;
   } else {
     calculatedPoints = k * 10;
     if (sameColorItems > k) {
@@ -423,7 +425,6 @@ function pointsCalc(sameColorItems) {
 
 //обновление информации об игре
 function infoUpdate() {
-  itemsToDestroy = itemsToDestroy - sameColorItems.length;
   movesToWin--;
   points += pointsCalc(sameColorItems.length);
   let progress = (points / pointsToWin) * 100;
@@ -513,10 +514,12 @@ canvas.addEventListener("click", (event) => {
   for (let r of rects) {
     let state = r.itemClick(x, y);
     if (state) {
+      shuffleBooster.classList.add("disabled");
       sameColorItems = checkItem(r);
       if (sameColorItems.length >= k) {
         for (let i of sameColorItems) {
         }
+        playfield.classList.add("disabled");
         requestAnimationFrame(animateDeletion);
         //обновление поля info
         infoUpdate();
@@ -526,3 +529,14 @@ canvas.addEventListener("click", (event) => {
     }
   }
 });
+
+let boosterUsed = false;
+//shuffleBooster
+shuffleBooster.onclick = function shuffleBoosterFunc() {
+  if (boosterUsed == false) {
+    playfield.classList.add("disabled");
+    requestAnimationFrame(animateRuffle);
+    boosterUsed = true;
+  }
+  shuffleBooster.classList.add("shuffle-disabled");
+}

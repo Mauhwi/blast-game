@@ -107,6 +107,7 @@ body {
 }
 
 .playField {
+  cursor: pointer;
   margin: auto;
   margin-left: 10px;
   margin-right: 10px;
@@ -117,6 +118,7 @@ body {
   align-self: flex-start;
 }
 .disabled {
+  cursor: default;
   pointer-events: none;
 }
 canvas {
@@ -286,4 +288,25 @@ span {
     box-shadow: 0px 0px 4px 4px #5d92a3, 0px 0px 1px 8px #82ffff,
       0px 0px 16px 14px rgb(86, 195, 86);
   }
+}
+
+.shuffle-booster {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  border-radius: 20px;
+  width: 180px;
+  height: 60px;
+  margin: auto;
+  margin-top: 20px;
+  background: rgb(254,139,216);
+  background: linear-gradient(180deg, rgb(255, 160, 223) 0%, rgb(192, 38, 108) 50%, rgba(188,9,91,1) 100%);
+}
+
+.shuffle-disabled {
+  cursor: default;
+  pointer-events: none;
+  background: grey;
+  background: linear-gradient(180deg, rgb(214, 214, 214) 0%, rgb(112, 112, 112) 50%, rgb(93, 93, 93) 100%);
 }
