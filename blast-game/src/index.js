@@ -13,6 +13,8 @@ let rows = 8;
 let k = 2;
 let c = 5;
 
+let progress = 0
+
 let playFieldWidth = 500;
 let itemSize = playFieldWidth / cols;
 let playFieldHeight = itemSize * rows;
@@ -50,7 +52,7 @@ let movesField = document.querySelector(".moves-counter");
 let progressBar = document.querySelector(".progress-bar");
 let statusText = document.querySelector(".status-text");
 let statusInfoWrapper = document.querySelector(".status-info-wrapper");
-// let gameScreen = document.querySelector(".game");
+let resetButton = document.querySelector(".reset");
 pointsField.innerHTML = points;
 movesField.innerHTML = movesToWin;
 
@@ -87,6 +89,7 @@ class fieldItem {
     context.clearRect(this.x, this.y, this.width, this.height);
   }
 
+  //для анимации исчезновения
   compress() {
     if (this.height > 0 + 1) {
       context.clearRect(this.x, this.y, itemSize, itemSize);
@@ -167,6 +170,7 @@ class fieldItem {
     this.draw();
   }
 
+  //для анимации движения вниз
   update() {
     if (this.pY >= this.y - this.animationStep) {
       context.clearRect(
@@ -198,6 +202,7 @@ class fieldItem {
   }
 }
 
+//инициализация поля
 function initPlayField() {
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
@@ -308,7 +313,6 @@ function animateItemsFall() {
     populateEmptyItems();
     if (movesToWin !== 0) {
       playfield.classList.remove("disabled");
-      shuffleBooster.classList.remove("disabled");
     } else {
       if (points >= pointsToWin) {
         statusText.innerHTML = "Победа!";
@@ -398,6 +402,9 @@ function populateEmptyItems() {
     }
   }
   setTimeout(() => {
+    shuffleBooster.classList.remove("disabled")
+  }, 300)
+  setTimeout(() => {
     if (s < 1) {
       if (checkArray(rects) == false) {
         context.save();
@@ -427,7 +434,7 @@ function pointsCalc(sameColorItems) {
 function infoUpdate() {
   movesToWin--;
   points += pointsCalc(sameColorItems.length);
-  let progress = (points / pointsToWin) * 100;
+  progress = (points / pointsToWin) * 100;
   if (points > pointsToWin) {
     pointsField.innerHTML = points;
     progressBar.style.width = 100 + "%";
@@ -439,6 +446,7 @@ function infoUpdate() {
   movesField.innerHTML = movesToWin;
 }
 
+//анимация перемешивания
 function animateRuffle() {
   context.clearRect(0, 0, playFieldWidth, playFieldHeight);
   frame++;
@@ -539,4 +547,25 @@ shuffleBooster.onclick = function shuffleBoosterFunc() {
     boosterUsed = true;
   }
   shuffleBooster.classList.add("shuffle-disabled");
+}
+
+resetButton.onclick = function reset() {
+  context.clearRect(0,0, playFieldWidth, playFieldHeight)
+  rects=[]
+  pointsToWin = 320;
+  movesToWin = 6;
+  points = 0;
+  s = 0;
+  progress = 0;
+  boosterUsed = false;
+  initPlayField();
+
+  playfield.classList.remove("disabled");
+  shuffleBooster.classList.remove("shuffle-disabled");
+  statusInfoWrapper.classList.remove("bad-glow");
+  statusInfoWrapper.classList.remove("good-glow");
+  statusText.innerHTML = "...";
+  progressBar.style.width = 5 + "%";
+  movesField.innerHTML = movesToWin;
+  pointsField.innerHTML = points;
 }
